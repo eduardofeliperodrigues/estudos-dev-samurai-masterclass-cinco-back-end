@@ -6,6 +6,10 @@ const repoSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    proprietario: {
+      type: String,
+      required: true,
+    },
     url: {
       type: String,
       required: true,
