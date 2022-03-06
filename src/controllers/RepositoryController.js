@@ -6,6 +6,7 @@ class RepositoryController {
   async listAllRepositoriesOfAnUser(request, response) {
     try {
       const { userId } = request.params;
+      const { q } = request.query;
 
       const user = await User.findById(userId);
 
@@ -13,7 +14,16 @@ class RepositoryController {
         return response.status(404).json({message: 'User not found.'})
       }
 
-      const repositories = await Repository.find({userId: userId});
+      let query = {};
+
+      if (q) {
+        query = { url: { $regex: q }}
+      }
+
+      const repositories = await Repository.find({
+        userId: userId,
+        ...query
+      });
 
       return response.status(200).json(repositories)
 
@@ -35,10 +45,17 @@ class RepositoryController {
         return response.status(404).json({message: 'User not found.'})
       }
 
-      const repository = await Repository.findOne({userId, url })
+      const repository = await Repository.findOne({ userId, url })
 
       if (repository) {
         return response.status(409).json({message: 'Repository already exists.'})
+      }
+
+      const git = url.includes('github')
+      const gitlab = url.includes('gitlab')
+
+      if (!git && !gitlab) {
+        return response.status(400).json({message: 'Your url is invalid.'})
       }
 
       const urlPieces = url.split('/')

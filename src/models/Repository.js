@@ -13,9 +13,6 @@ const repoSchema = mongoose.Schema(
     url: {
       type: String,
       required: true,
-      index: {
-        unique: true
-      }
     },
     userId: {
       type: String,
